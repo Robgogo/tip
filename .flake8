@@ -1,0 +1,9 @@
+[flake8]
+ignore = F401,W293,W291,E704,C901,F403,F405, E402, F811, F841
+exclude =
+    .git,
+    __pycache__,
+    .ebextensions,
+    python36
+max-complexity = 10
+max-line-length=150
