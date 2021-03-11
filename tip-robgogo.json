@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "tip-robgogo",
+  "private_key_id": "da3c311fbc8265c769e571353736273f45b4bbf1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCdMgvVvEAy0frY\nUD+Ry23ARjixA8P075mqNaNzsY1tWCZri2XTL9Ilva0lFkUPHOXU86ppWzXBTrB+\n0Fg9fkXgQXgoh2QGvdBjRN/nYvIYybBsY8Ft9gT3gsN1asxJCCjAGyfljBJq2KCR\naUvRAy/MVJ6AW9x7PJ5fXkl40sUMia88fCX2yHHIpbsIfI8kxsSYlUoduEI3TtqL\nyMRG+27BIMqhqAkxXsoUY7F7fEb1rN4p8xHg8A4OtEhkCnhGkp3KIhd9TmIJtKbg\nmJGY7GiGGSmt5l0B2fPW5Rb3os8h48MXsuj780ITAqriItXj4qRMhJeS+z1nriI+\nNBlRY/RvAgMBAAECggEAAl0WkQor4qoGMGsLV166RAa3/lzStAz+P/E6h6qG700c\nTaNiqgBDgYUzLZPeJWRQaquXR4WzShP1HADA13vdua5dwrv2be3OcTQ/oaGfh24s\nXcu36SQ5AuV0K4CqK2k9bMPE6PL6hQ8NYeJalA9ofgLmkqbzhgpIusXNmQPG4QPu\nXkLFQUKKsjXVQmCrOBXmUWEAvpyrRY2I4eIAWp4CzC7j6ipivKzDpPegzL4abyxA\n8naeY6ujsjwKlNUzA8X/BCrHVfzC4LarnREj99QFg4clkwCjGzRURysPwnbDT2vb\niBrl1rWwvU5fdghBP3MbzrBN5lkvfPqa+Y15vC8XUQKBgQDRUHyeawOExtqSp2Ek\nYXjMtPBa84SHWDEgWiKsS0wWK0R/fBkjZsq5jPfVs1Jxg/NEy3qWRrlOTaRF59Yy\nJVQWWMUvcwGerwl4PzLRkE/MbPK2pndFdaXUGJf4eFbMFpYkOtCuMhT6xO6imqfO\nZbRdHEIn0q/VD00dnXmrMxw8ewKBgQDAQad6B3rce3VX+gcvL/mxaj2678qVjaGC\n0017gX2xh7DFyb0grDOjaiSp4YlHDBTdLBxfGW1R70xdZ9l2foEgOn14ui+9QXm8\n6aUEcIdUcLY7i2ydRFpC6GjcVo93YVKklntLhEs8D5bW0JKY06s+CY9BHfsQpLtJ\nd5CtqyqHnQKBgQDOo1HTpzv7CcFgRIOfQeba2MnsUDoGz6b4FGPkihVcUWy3GpFK\npMD/+030F6sNS8GOqf6ker+XsQi6xoxsRvPDd/F6zWPM/2ou3t1Ri9FrtCbM8HwR\nA3spbvogntS5eJbSv4miXujdRCt+NYXyOe+ceDhLTjCt+wQbd4pU3AlFHwKBgGqn\nAUVMyPdu9ZWsejfPIXEuQrhlNbjpLOPqXF1bZGMLpyDR3T02yh6pT1V+bC0hoqFf\nSw3miSKe4Xoflh+J5g/+4oQKpVkT7XjDFGv2ENzi+fTmT4ae2IOtch5pVoUfVD1B\nzXwDE8lpzH+2jNyC78gmfXXeL9z3xX3n+jadcaZxAoGAf/GHk8+Wq3RwItebUaKE\nsJ+3SPa5XT2xsH4kIxIj4pBjbBdNgoF0dlscykcisDf2zSz+it31DAFIqZw3eVgE\nSNOVmpFmmYP7DCLmArhpNuB/m3nzMSARNCL/WkV0lziXk+XUHviDtNE3OWfkbA0g\npQ4rag3tKmUGVt29mil6JW8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "bucket@tip-robgogo.iam.gserviceaccount.com",
+  "client_id": "104840000588155232927",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bucket%40tip-robgogo.iam.gserviceaccount.com"
+}

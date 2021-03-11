@@ -1,0 +1,4 @@
+First implement gcloud storage. - Done
+Implement code to add the other tables first time only.
+Implement Celery.
+Test API.

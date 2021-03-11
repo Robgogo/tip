@@ -1,8 +1,11 @@
 # TODO: Implement excel transformation to JSON and upload.
+from datetime import date, datetime
 import pandas as pd
 import csv
 import os
 
+from django.conf import settings
+from api.helpers.gcloud_helper import upload_blob
 from api.models.incidents import RaisedIncident, ClosedIncident, BacklogIncident, CriticalIncident, Department, CriticalService
 
 
@@ -20,9 +23,11 @@ def critical_incidents_excel_handler(filename):
                                        application=application)
             bulk_creator.append(new_inc)
         CriticalIncident.objects.bulk_create(bulk_creator)
-        new_filename = filename.split('.')[0]
-        incident_df.to_csv(new_filename + '.csv')
-        # TODO: gcloud storage upload here
+        new_filename = f"critical_incidents-{datetime.now()}"
+        incident_df.to_csv(f'{new_filename}.csv')
+        bucket_name = settings.GS_BUCKET_NAME
+        upload_blob(bucket_name, new_filename, new_filename)
+        os.remove(new_filename)
         return "Success"
     except Exception as e:
         return "Failed"
@@ -68,7 +73,9 @@ def raised_incidents_excel_handler(filename):
         month = filename.split('.')[0].split('-')[1]
         new_filename = f'monthly_incidents_raised-{month}.csv'
         data.to_csv(new_filename)
-        # TODO: gcloud storage upload here
+        bucket_name = settings.GS_BUCKET_NAME
+        upload_blob(bucket_name, new_filename, new_filename)
+        os.remove(new_filename)
         return "Success"
     except Exception as e:
         return "Failed"  
@@ -92,14 +99,16 @@ def closed_incidents_excel_handler(filename):
                 department = Department.objects.filter(department_code=code).first()
             created = row['Create Date-Time'].to_pydatetime()
             resolved = row['Resolution Date-Time'].to_pydatetime()
-            new_raised = RaisedIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
+            new_closed = ClosedIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
                                         incident_status=row['Incident Status'], created_date=created, resolution_date=resolved, department=department)
-            bulk_creator.append(new_raised)
-        RaisedIncident.objects.bulk_create(bulk_creator)
+            bulk_creator.append(new_closed)
+        ClosedIncident.objects.bulk_create(bulk_creator)
         month = filename.split('.')[0].split('-')[1]
-        new_filename = f'monthly_incidents_raised-{month}.csv'
+        new_filename = f'monthly_incidents_closed-{month}.csv'
         data.to_csv(new_filename)
-        # TODO: gcloud storage upload here
+        bucket_name = settings.GS_BUCKET_NAME
+        upload_blob(bucket_name, new_filename, new_filename)
+        os.remove(new_filename)
         return "Success"
     except Exception as e:
         return "Failed"
@@ -125,14 +134,16 @@ def backlog_incidents_excel_handler(filename):
             created = row['Creation Date-Time'].to_pydatetime()
             resolved = row['Resolution Date-Time'].to_pydatetime()
             # TODO: check if the incident exist before adding it to db
-            new_raised = RaisedIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
-                                        incident_status=row['Incident Status'], created_date=created, resolution_date=resolved, department=department)
-            bulk_creator.append(new_raised)
-        RaisedIncident.objects.bulk_create(bulk_creator)
+            new_backlog = BacklogIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
+                                          incident_status=row['Incident Status'], created_date=created, resolution_date=resolved, department=department)
+            bulk_creator.append(new_backlog)
+        BacklogIncident.objects.bulk_create(bulk_creator)
         month = filename.split('.')[0].split('-')[1]
-        new_filename = f'monthly_incidents_raised-{month}.csv'
+        new_filename = f'monthly_incidents_backlog-{month}.csv'
         data.to_csv(new_filename)
-        # TODO: gcloud storage upload here
+        bucket_name = settings.GS_BUCKET_NAME
+        upload_blob(bucket_name, new_filename, new_filename)
+        os.remove(new_filename)
         return "Success"
     except Exception as e:
         return "Failed"  
