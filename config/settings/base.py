@@ -186,9 +186,10 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = 'tip-robgogo'
-SERVICE_ACCOUNT = os.path.join(BASE_DIR.parent, '/tip-robgogo.json')
+SERVICE_ACCOUNT = os.path.join(BASE_DIR.parent, 'tip-robgogo.json')
+print(SERVICE_ACCOUNT)
 
 
 # EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = reverse_lazy('account_confirm_complete')

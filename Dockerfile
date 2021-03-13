@@ -17,7 +17,7 @@ ADD ./manage.py /app/
 ADD ./config/ /app/config/
 ADD ./scripts/ /app/scripts/
 ADD ./api/ /app/api/
-ADD ./test_images /app/test_images
+ADD ./tip-robgogo.json /app/
 RUN chmod +x /app/scripts/runserver.sh
 
 EXPOSE 8000

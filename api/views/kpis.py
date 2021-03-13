@@ -12,7 +12,7 @@ from api.serializers.incidents import DepartmentSerializer, CriticalServiceSeria
 
 
 class NumberOFIncidentsRaisedViewSet(ListAPIView):
-    permission_classes = (permissions.IsAuthenticated, )
+    # permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
         if request.user.role == 3:
@@ -40,7 +40,7 @@ class NumberOFIncidentsRaisedViewSet(ListAPIView):
 
 
 class AvailabiltyPerServiceViewSet(ListAPIView):
-    permission_classes = (permissions.IsAuthenticated, )
+    # permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
         if request.user.role == 3:
@@ -66,7 +66,7 @@ class AvailabiltyPerServiceViewSet(ListAPIView):
 
 
 class SLAPerSeverityViewSet(ListAPIView):
-    permission_classes = (permissions.IsAuthenticated, )
+    # permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
         if request.user.role == 3:

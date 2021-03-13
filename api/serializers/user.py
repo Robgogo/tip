@@ -15,6 +15,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'last_name',
             'is_active',
             'created',
+            'role',
         )
 
 
@@ -27,7 +28,7 @@ class CreateUserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         ordering = ('id',)
         fields = ('id', 'url', 'email', 'first_name',
-                  'last_name', 'password')
+                  'last_name', 'password', 'role')
         read_only_fields = ('auth_token',)
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -46,6 +47,7 @@ class RestAuthRegisterSerializer(RegisterSerializer):
             'email': self.validated_data.get('email', ''),
             'first_name': self.validated_data.get('first_name', ''),
             'last_name': self.validated_data.get('last_name', ''),
+            'role': self.validated_data.get('role', 3)
         }
 
     def save(self, request):

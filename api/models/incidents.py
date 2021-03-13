@@ -7,10 +7,15 @@ from django.db.models.fields import NullBooleanField
 
 
 class Department(models.Model):
+
     department_code = models.CharField(max_length=50, primary_key=True)
     department_name = models.CharField(max_length=50)
     department_desc = models.CharField(max_length=50)
 
+    class Meta:
+        app_label = 'api'
+        db_table = 'departments'
+    
     def __repr__(self):
         return self.department_code
     

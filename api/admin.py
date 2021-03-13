@@ -1,3 +1,4 @@
+
 from django import forms
 from django.contrib import admin
 from api.models.user import User
@@ -9,6 +10,9 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.db import models as django_models
 
+from api.views.file_handler import ServiceTableViewSet
+from api.models.incidents import Department, CriticalService, CriticalIncident, RaisedIncident, ClosedIncident, BacklogIncident
+
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -18,7 +22,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'is_active', 'is_staff', 'username')
+        fields = ('email', 'first_name', 'last_name', 'is_active', 'is_staff', 'role', 'username', 'is_superuser')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -63,7 +67,7 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'first_name', 'last_name', 'username', 'is_staff')
+    list_display = ('id', 'email', 'first_name', 'last_name', 'username', 'is_staff', 'role', 'is_superuser')
     list_filter = ('id',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -84,8 +88,42 @@ class UserAdmin(BaseUserAdmin):
 
 
 # Register your models here.
+class DepartmentAdmin(admin.ModelAdmin):
+    model = Department
+    list_display = ('department_code', 'department_name', 'department_desc')
+
+
+class ServiceAdmin(admin.ModelAdmin):
+    model = CriticalService
+    list_display = ('id', 'service', 'application')
+
+
+class RaisedIncidentAdmin(admin.ModelAdmin):
+    model = RaisedIncident
+    list_display = ('id', 'incident_id', 'priority', 'incident_type', 'incident_status', 'created_date', 'resolution_date', 'department')
+
+
+class ClosedIncidentAdmin(admin.ModelAdmin):
+    model = ClosedIncident
+    list_display = ('id', 'incident_id', 'priority', 'incident_type', 'incident_status', 'created_date', 'resolution_date', 'department')
+
+
+class BacklogIncidentAdmin(admin.ModelAdmin):
+    model = BacklogIncident
+    list_display = ('id', 'incident_id', 'priority', 'incident_type', 'incident_status', 'created_date', 'resolution_date', 'department')
+
+
+class CriticalIncidentAdmin(admin.ModelAdmin):
+    model = CriticalIncident
+    list_display = ('id', 'incident_id', 'priority', 'incident_status', 'created_date', 'resolution_date', 'application')
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Department, DepartmentAdmin)
+admin.site.register(CriticalService, ServiceAdmin)
+admin.site.register(RaisedIncident, RaisedIncidentAdmin)
+admin.site.register(ClosedIncident, ClosedIncidentAdmin)
+admin.site.register(BacklogIncident, BacklogIncidentAdmin)
+admin.site.register(CriticalIncident, CriticalIncidentAdmin)
 
 admin.site.unregister(Group)

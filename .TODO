@@ -1,4 +1,7 @@
 First implement gcloud storage. - Done
-Implement code to add the other tables first time only.
+Implement code to add the other tables first time only. - Done
+Implement api to handle the file as upload and handle the excel files. - Done
+Register views in urls.py. - Done
+Register models in admin.py. - Done
 Implement Celery.
 Test API.

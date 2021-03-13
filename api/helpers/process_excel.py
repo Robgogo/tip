@@ -11,7 +11,7 @@ from api.models.incidents import RaisedIncident, ClosedIncident, BacklogIncident
 
 def critical_incidents_excel_handler(filename):
     try:
-        data = pd.read_excel(filename)
+        data = pd.read_excel(filename, engine='odf')
         incident_df = data[['Incident ID', 'Date raised', 'Date closed', 'Priority', 'Status', 'CI Name']]
         bulk_creator = []
         for idx, row in incident_df.iterrows():
@@ -22,11 +22,12 @@ def critical_incidents_excel_handler(filename):
                                        resolution_date=resolved, priority=row['Priority'], incident_status=row['Status'],
                                        application=application)
             bulk_creator.append(new_inc)
+        bucket_name = settings.GS_BUCKET_NAME
+        new_filename = f"critical_incidents-{datetime.now()}"
+        upload_blob(bucket_name, new_filename, new_filename)
         CriticalIncident.objects.bulk_create(bulk_creator)
         new_filename = f"critical_incidents-{datetime.now()}"
-        incident_df.to_csv(f'{new_filename}.csv')
-        bucket_name = settings.GS_BUCKET_NAME
-        upload_blob(bucket_name, new_filename, new_filename)
+        incident_df.to_csv(f'{new_filename}.csv', index=False)
         os.remove(new_filename)
         return "Success"
     except Exception as e:
@@ -72,7 +73,7 @@ def raised_incidents_excel_handler(filename):
         RaisedIncident.objects.bulk_create(bulk_creator)
         month = filename.split('.')[0].split('-')[1]
         new_filename = f'monthly_incidents_raised-{month}.csv'
-        data.to_csv(new_filename)
+        data.to_csv(new_filename, index=False)
         bucket_name = settings.GS_BUCKET_NAME
         upload_blob(bucket_name, new_filename, new_filename)
         os.remove(new_filename)
@@ -105,7 +106,7 @@ def closed_incidents_excel_handler(filename):
         ClosedIncident.objects.bulk_create(bulk_creator)
         month = filename.split('.')[0].split('-')[1]
         new_filename = f'monthly_incidents_closed-{month}.csv'
-        data.to_csv(new_filename)
+        data.to_csv(new_filename, index=False)
         bucket_name = settings.GS_BUCKET_NAME
         upload_blob(bucket_name, new_filename, new_filename)
         os.remove(new_filename)
@@ -140,10 +141,51 @@ def backlog_incidents_excel_handler(filename):
         BacklogIncident.objects.bulk_create(bulk_creator)
         month = filename.split('.')[0].split('-')[1]
         new_filename = f'monthly_incidents_backlog-{month}.csv'
-        data.to_csv(new_filename)
+        data.to_csv(new_filename, index=False)
         bucket_name = settings.GS_BUCKET_NAME
         upload_blob(bucket_name, new_filename, new_filename)
         os.remove(new_filename)
         return "Success"
     except Exception as e:
-        return "Failed"  
+        return "Failed"
+
+
+def application_service_excel_handler(filename):
+    try:
+        data = pd.read_excel(filename)
+        data = data.drop('Unnamed: 0', axis=1)
+        serv_app_bulk_creator = []
+        for idx, row in data[['Service', 'Application']].iterrows():
+            new_serv_app = CriticalService(service=row['Service'], application=row['Application'])
+            serv_app_bulk_creator.append(new_serv_app)
+        CriticalService.objects.bulk_create(serv_app_bulk_creator)
+        new_filename = 'critical_service_apps.csv'
+        data[['Service', 'Application']].to_csv(new_filename, index=False)
+        bucket_name = settings.GS_BUCKET_NAME
+        upload_blob(bucket_name, new_filename, new_filename)
+        os.remove(new_filename)
+        return "Success"
+    except Exception as e:
+        return "Failed"
+
+
+def department_excel_handler(filename):
+    try:
+        print(filename)
+        data = pd.read_excel(filename)
+        data = data.drop('Unnamed: 3', axis=1)
+        dep_bulk_creator = []
+        for idx, row in data[['Departamento Código', 'Departamento Desc.', 'Ruta Departamentos - Desc.2']].iterrows():
+            new_dep = Department(department_code=row['Departamento Código'], department_name=row['Departamento Desc.'], department_desc=row['Ruta Departamentos - Desc.2'])
+            dep_bulk_creator.append(new_dep)
+        new_filename = 'organization_map.csv'
+        data.columns = ['department_code', 'department_name', 'department_desc']
+        data.to_csv(new_filename, index=False)
+        bucket_name = settings.GS_BUCKET_NAME
+        upload_blob(bucket_name, new_filename, new_filename)
+        Department.objects.bulk_create(dep_bulk_creator)
+        os.remove(new_filename)
+        return "Success"
+    except Exception as e:
+        print("From Handler > ", e)
+        return "Failed"

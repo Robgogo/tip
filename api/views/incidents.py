@@ -13,7 +13,7 @@ from api.serializers.incidents import DepartmentSerializer, CriticalServiceSeria
 class DepartmentViewSet(ListCreateAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    # permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         try:
@@ -29,7 +29,7 @@ class DepartmentViewSet(ListCreateAPIView):
 class CriticalServiceViewSet(ListCreateAPIView):
     queryset = CriticalService.objects.all()
     serializer_class = CriticalServiceSerializer
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    # permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         try:
@@ -61,7 +61,7 @@ class CriticalServiceViewSet(ListCreateAPIView):
 class RaisedIncidentViewSet(ListCreateAPIView):
     queryset = RaisedIncident.objects.all()
     serializer_class = RaisedIncidentSerializer
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    # permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         try:
@@ -77,7 +77,7 @@ class RaisedIncidentViewSet(ListCreateAPIView):
 class ClosedIncidentViewSet(ListCreateAPIView):
     queryset = ClosedIncident.objects.all()
     serializer_class = ClosedIncidentSerializer
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    # permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         try:
@@ -93,7 +93,7 @@ class ClosedIncidentViewSet(ListCreateAPIView):
 class BacklogIncidentViewSet(ListCreateAPIView):
     queryset = BacklogIncident.objects.all()
     serializer_class = BacklogIncidentSerializer
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    # permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         try:
@@ -109,7 +109,7 @@ class BacklogIncidentViewSet(ListCreateAPIView):
 class CriticalIncidentViewSet(ListCreateAPIView):
     queryset = CriticalIncident.objects.all()
     serializer_class = CriticalIncidentSerializer
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    # permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         try:

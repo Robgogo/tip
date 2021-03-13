@@ -31,6 +31,7 @@ class CriticalServiceSerializer(serializers.HyperlinkedModelSerializer):
 
 class RaisedIncidentSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='incident-raised-detail')
+    department = serializers.HyperlinkedRelatedField(view_name='department-detail', read_only=True)
 
     class Meta:
         model = RaisedIncident
@@ -39,6 +40,7 @@ class RaisedIncidentSerializer(serializers.HyperlinkedModelSerializer):
 
 class ClosedIncidentSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='incident-raised-detail')
+    department = serializers.HyperlinkedRelatedField(view_name='department-detail', read_only=True)
 
     class Meta:
         model = ClosedIncident
@@ -47,7 +49,7 @@ class ClosedIncidentSerializer(serializers.HyperlinkedModelSerializer):
 
 class CriticalIncidentSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='incident-raised-detail')
-    incident_id = serializers.HyperlinkedRelatedField(view_name='incident-detail', read_only=True)
+    # incident_id = serializers.HyperlinkedRelatedField(view_name='incident-detail', read_only=True)
     application = serializers.HyperlinkedRelatedField(view_name='critical-service-detail', read_only=True)
 
     class Meta:
@@ -57,6 +59,7 @@ class CriticalIncidentSerializer(serializers.HyperlinkedModelSerializer):
 
 class BacklogIncidentSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='incident-raised-detail')
+    department = serializers.HyperlinkedRelatedField(view_name='department-detail', read_only=True)
 
     class Meta:
         model = BacklogIncident

@@ -8,7 +8,6 @@ from api.managers.user_manager import UserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
     ADMIN = 1
     MANAGER = 2
     EMPLOYEE = 3
@@ -18,16 +17,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         (MANAGER, 'Manager'),
         (EMPLOYEE, 'Employee')
     )
-    # ToDo: Implement Roles!
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     last_login = models.DateTimeField(blank=True, null=True)
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, default='')
-    first_name = models.CharField(max_length=255, null=True)
-    last_name = models.CharField(max_length=255, null=True)
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, null=True, default=EMPLOYEE, blank=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=True)
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=EMPLOYEE)
     objects = UserManager()
 
     created = models.DateTimeField(auto_now_add=True)
