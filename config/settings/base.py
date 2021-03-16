@@ -191,5 +191,6 @@ GS_BUCKET_NAME = 'tip-robgogo'
 SERVICE_ACCOUNT = os.path.join(BASE_DIR.parent, 'tip-robgogo.json')
 print(SERVICE_ACCOUNT)
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 # EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = reverse_lazy('account_confirm_complete')

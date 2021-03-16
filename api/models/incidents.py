@@ -71,8 +71,8 @@ class RaisedIncident(models.Model):
     priority = models.CharField(max_length=50)
     incident_type = models.CharField(max_length=250)
     incident_status = models.CharField(max_length=50, choices=STATUS)
-    created_date = models.DateTimeField()
-    resolution_date = models.DateTimeField()
+    created_date = models.DateTimeField(null=True, blank=True)
+    resolution_date = models.DateTimeField(null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=CASCADE, null=True, blank=True)
 
     def __repr__(self):
@@ -119,7 +119,7 @@ class BacklogIncident(models.Model):
     priority = models.CharField(max_length=50)
     incident_type = models.CharField(max_length=250)
     incident_status = models.CharField(max_length=50, choices=STATUS)
-    created_date = models.DateTimeField()
+    created_date = models.DateTimeField(null=True, blank=True)
     resolution_date = models.DateTimeField(null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=CASCADE, null=True, blank=True)
 

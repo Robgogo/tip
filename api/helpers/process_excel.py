@@ -16,8 +16,8 @@ def critical_incidents_excel_handler(filename):
         bulk_creator = []
         for idx, row in incident_df.iterrows():
             application = CriticalService.objects.filter(application=row['CI Name']).first()
-            created = row['Date raised'].to_pydatetime()
-            resolved = row['Date closed'].to_pydatetime()
+            created = pd.to_datetime(row['Date raised'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            resolved = pd.to_datetime(row['Date closed'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
             new_inc = CriticalIncident(incident_id=row['Incident ID'], created_date=created,
                                        resolution_date=resolved, priority=row['Priority'], incident_status=row['Status'],
                                        application=application)
@@ -31,6 +31,7 @@ def critical_incidents_excel_handler(filename):
         os.remove(new_filename)
         return "Success"
     except Exception as e:
+        print("From Handler > Critical >", e)
         return "Failed"
 
 
@@ -64,14 +65,18 @@ def raised_incidents_excel_handler(filename):
             code = None
             if not type(row['Departamento Cliente']) == float:
                 code = row['Departamento Cliente'].split('(')[1].split(')')[0]
-                department = Department.objects.filter(department_code=code).first()
-            created = row['Create Date-Time'].to_pydatetime()
-            resolved = row['Resolution Date-Time'].to_pydatetime()
+            department = Department.objects.filter(department_code=code).first()
+            created = pd.to_datetime(row['Create Date-Time'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            resolved = pd.to_datetime(row['Resolution Date-Time'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            if pd.isna(created):
+                created = None
+            if pd.isna(resolved):
+                resolved = None
             new_raised = RaisedIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
                                         incident_status=row['Incident Status'], created_date=created, resolution_date=resolved, department=department)
             bulk_creator.append(new_raised)
         RaisedIncident.objects.bulk_create(bulk_creator)
-        month = filename.split('.')[0].split('-')[1]
+        month = filename.split('.')[0].split('-')[0].strip()
         new_filename = f'monthly_incidents_raised-{month}.csv'
         data.to_csv(new_filename, index=False)
         bucket_name = settings.GS_BUCKET_NAME
@@ -79,6 +84,7 @@ def raised_incidents_excel_handler(filename):
         os.remove(new_filename)
         return "Success"
     except Exception as e:
+        print("From Handler > Raised >", e)
         return "Failed"  
 
 
@@ -97,14 +103,18 @@ def closed_incidents_excel_handler(filename):
             code = None
             if not type(row['Departamento Cliente']) == float:
                 code = row['Departamento Cliente'].split('(')[1].split(')')[0]
-                department = Department.objects.filter(department_code=code).first()
-            created = row['Create Date-Time'].to_pydatetime()
-            resolved = row['Resolution Date-Time'].to_pydatetime()
+            department = Department.objects.filter(department_code=code).first()
+            created = pd.to_datetime(row['Creation Date-Time'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            resolved = pd.to_datetime(row['Resolution Date-Time'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            if pd.isna(created):
+                created = None
+            if pd.isna(resolved):
+                resolved = None
             new_closed = ClosedIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
                                         incident_status=row['Incident Status'], created_date=created, resolution_date=resolved, department=department)
             bulk_creator.append(new_closed)
         ClosedIncident.objects.bulk_create(bulk_creator)
-        month = filename.split('.')[0].split('-')[1]
+        month = filename.split('.')[0].split('-')[0].strip()
         new_filename = f'monthly_incidents_closed-{month}.csv'
         data.to_csv(new_filename, index=False)
         bucket_name = settings.GS_BUCKET_NAME
@@ -112,6 +122,7 @@ def closed_incidents_excel_handler(filename):
         os.remove(new_filename)
         return "Success"
     except Exception as e:
+        print("From Handler > Closed > ", e)
         return "Failed"
 
 
@@ -125,21 +136,25 @@ def backlog_incidents_excel_handler(filename):
         data.columns = headers
         data = data[sort_by_ccg]
         data = data[sort_by_cc]
-        data = data[['Incidenct Code', 'Create Date-Time', 'Resolution Date-Time', 'Incident Status', 'Priority', 'Inc. Type', 'Departamento Cliente']]
+        data = data[['Incidenct Code', 'Creation Date-Time', 'Resolution Date-Time', 'Incident Status', 'Priority', 'Inc. Type', 'Departamento Cliente']]
         bulk_creator = []
         for idx, row in data.iterrows():
             code = None
             if not type(row['Departamento Cliente']) == float:
                 code = row['Departamento Cliente'].split('(')[1].split(')')[0]
-                department = Department.objects.filter(department_code=code).first()
-            created = row['Creation Date-Time'].to_pydatetime()
-            resolved = row['Resolution Date-Time'].to_pydatetime()
+            department = Department.objects.filter(department_code=code).first()
+            created = pd.to_datetime(row['Creation Date-Time'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            resolved = pd.to_datetime(row['Resolution Date-Time'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            if pd.isna(created):
+                created = None
+            if pd.isna(resolved):
+                resolved = None
             # TODO: check if the incident exist before adding it to db
             new_backlog = BacklogIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
                                           incident_status=row['Incident Status'], created_date=created, resolution_date=resolved, department=department)
             bulk_creator.append(new_backlog)
         BacklogIncident.objects.bulk_create(bulk_creator)
-        month = filename.split('.')[0].split('-')[1]
+        month = filename.split('.')[0].split('-')[0].strip()
         new_filename = f'monthly_incidents_backlog-{month}.csv'
         data.to_csv(new_filename, index=False)
         bucket_name = settings.GS_BUCKET_NAME
@@ -147,6 +162,7 @@ def backlog_incidents_excel_handler(filename):
         os.remove(new_filename)
         return "Success"
     except Exception as e:
+        print("From Handler > Backlog > ", e)
         return "Failed"
 
 
@@ -166,6 +182,7 @@ def application_service_excel_handler(filename):
         os.remove(new_filename)
         return "Success"
     except Exception as e:
+        print("From Handler > Service >  ", e)
         return "Failed"
 
 

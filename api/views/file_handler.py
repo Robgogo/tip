@@ -104,11 +104,11 @@ class IncidentTablesViewSet(APIView):
             response_raised = raised_incidents_excel_handler(file_uploaded.name)
             response_backlog = backlog_incidents_excel_handler(file_uploaded.name)
             response_closed = closed_incidents_excel_handler(file_uploaded.name)
-            if response_raised == 'Success' and response_backlog == 'Success' and response_closed == 'Success':
+            if response_closed == 'Success' and response_closed == 'Success' and response_raised == 'Success':
                 os.remove(file_uploaded.name)
                 return Response(data={"message": "File uploaded and loaded succesfully"}, status=status.HTTP_200_OK)
             else:
-                return Response(data={"message": "Loading data failed!"}, status=status.status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response(data={"message": "Loading data failed!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             print(e)
             return Response(data={'message': "Something went wrong!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

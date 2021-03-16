@@ -5,7 +5,8 @@ from django.urls import path, include, re_path
 from rest_auth.registration.views import VerifyEmailView, RegisterView
 
 from api.views.kpis import AvailabiltyPerServiceViewSet, NumberOFIncidentsRaisedViewSet, SLAPerSeverityViewSet
-from api.views.incidents import DepartmentViewSet, RaisedIncidentViewSet, ClosedIncidentViewSet, BacklogIncidentViewSet, CriticalIncidentViewSet, CriticalServiceViewSet
+from api.views.incidents import DepartmentViewSet, RaisedIncidentViewSet, ClosedIncidentViewSet, BacklogIncidentViewSet, CriticalIncidentViewSet, CriticalServiceViewSet, \
+    DepartmentDetailViewSet, RaisedIncidentDetailViewSet, ClosedIncidentDetailViewSet, BacklogIncidentDetailViewSet, CriticalIncidentDetailViewSet, CriticalServiceDetailViewSet
 from api.views.file_handler import DepartmentTableViewSet, IncidentTablesViewSet, CriticalIncidentTableViewSet, ServiceTableViewSet
 
 urlpatterns = [
@@ -19,6 +20,14 @@ urlpatterns = [
     path('admin/closed_incident/', ClosedIncidentViewSet.as_view(), name='closed'),
     path('admin/backlog_incident/', BacklogIncidentViewSet.as_view(), name='backlog'),
     path('admin/critical_incident/', CriticalIncidentViewSet.as_view(), name='critical'),
+    path('admin/department/', DepartmentViewSet.as_view(), name='department'),
+    path('admin/critical-service/', CriticalServiceViewSet.as_view(), name='critical-service'),
+    re_path(r'admin/raised_incident/(?P<id>[0-9a-f-]+)/$', RaisedIncidentDetailViewSet.as_view(), name='raised-incident-detail'),
+    re_path(r'admin/closed_incident/(?P<id>[0-9a-f-]+)/$', ClosedIncidentDetailViewSet.as_view(), name='closed-incident-detail'),
+    re_path(r'admin/backlog_incident/(?P<id>[0-9a-f-]+)/$', BacklogIncidentDetailViewSet.as_view(), name='backlog-incident-detail'),
+    re_path(r'admin/critical_incident/(?P<id>[0-9a-f-]+)/$', CriticalIncidentDetailViewSet.as_view(), name='crirtical-incident-detail'),
+    re_path(r'admin/department/(?P<id>[0-9a-f-]+)/$', DepartmentDetailViewSet.as_view(), name='department-detail'),
+    re_path(r'admin/critical-service/(?P<id>[0-9a-f-]+)/$', CriticalServiceDetailViewSet.as_view(), name='critical-service-detail'),
 
 
     # kpi Paths

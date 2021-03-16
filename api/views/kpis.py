@@ -15,8 +15,8 @@ class NumberOFIncidentsRaisedViewSet(ListAPIView):
     # permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
-        if request.user.role == 3:
-            return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
+        # if request.user.role == 3:
+        #     return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             year = kwargs['year']
             month = kwargs['month']
@@ -25,26 +25,27 @@ class NumberOFIncidentsRaisedViewSet(ListAPIView):
             low_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Baja", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             medium_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Media", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             high_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Alta", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
-            critical_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Critica", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
+            critical_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             resp = {
-                "critical": len(critical_severity),
-                "backlog": len(backlog_incidents),
-                "medium": len(medium_severity),
-                "high": len(high_severity),
-                "low": len(low_severity),
-                "incidents": RaisedIncidentSerializer(raised_incidents, context={"request": request}, many=True)
+                "critical": len(critical_severity.data),
+                "backlog": len(backlog_incidents.data),
+                "medium": len(medium_severity.data),
+                "high": len(high_severity.data),
+                "low": len(low_severity.data),
+                "incidents": RaisedIncidentSerializer(raised_incidents, context={"request": request}, many=True).data
             }
             return Response(data=resp, status=status.HTTP_200_OK)
         except Exception as e:
-            Response(data={'message': "Something went wrong!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            print(e)
+            return Response(data={'message': "Something went wrong!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 class AvailabiltyPerServiceViewSet(ListAPIView):
     # permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
-        if request.user.role == 3:
-            return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
+        # if request.user.role == 3:
+        #     return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             availability = {}
             year = kwargs['year']
@@ -69,8 +70,8 @@ class SLAPerSeverityViewSet(ListAPIView):
     # permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
-        if request.user.role == 3:
-            return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
+        # if request.user.role == 3:
+        #     return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             sla = {
                 "low": {
@@ -93,14 +94,14 @@ class SLAPerSeverityViewSet(ListAPIView):
             year = kwargs['year']
             month = kwargs['month']
             closed_incidents = ClosedIncident.objects.all()
-            low_severity = ClosedIncidentSerializer(closed_incidents.filter(priority="Baja", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
-            medium_severity = ClosedIncidentSerializer(closed_incidents.filter(priority="Media", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
-            high_severity = ClosedIncidentSerializer(closed_incidents.filter(priority="Alta", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
-            critical_severity = ClosedIncidentSerializer(closed_incidents.filter(priority="Critica", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
+            low_severity = closed_incidents.filter(priority="Baja", created_date__year=year, created_date__month=month)
+            medium_severity = closed_incidents.filter(priority="Media", created_date__year=year, created_date__month=month)
+            high_severity = closed_incidents.filter(priority="Alta", created_date__year=year, created_date__month=month)
+            critical_severity = closed_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=month)
             for low in low_severity:
                 time_delta = low.resolution_date - low.created_date
                 sla_time = 15 * 24
-                time_to_resolve = time_delta / 3600
+                time_to_resolve = time_delta.total_seconds() / 3600
                 if time_to_resolve <= sla_time:
                     sla['low']['in_sla'] += 1
                 else:
@@ -109,7 +110,7 @@ class SLAPerSeverityViewSet(ListAPIView):
             for medium in medium_severity:
                 time_delta = medium.resolution_date - medium.created_date
                 sla_time = 5 * 24
-                time_to_resolve = time_delta / 3600
+                time_to_resolve = time_delta.total_seconds() / 3600
                 if time_to_resolve <= sla_time:
                     sla['medium']['in_sla'] += 1
                 else:
@@ -118,7 +119,7 @@ class SLAPerSeverityViewSet(ListAPIView):
             for high in high_severity:
                 time_delta = high.resolution_date - high.created_date
                 sla_time = 8
-                time_to_resolve = time_delta / 3600
+                time_to_resolve = time_delta.total_seconds() / 3600
                 if time_to_resolve <= sla_time:
                     sla['high']['in_sla'] += 1
                 else:
@@ -126,8 +127,8 @@ class SLAPerSeverityViewSet(ListAPIView):
 
             for critical in critical_severity:
                 time_delta = critical.resolution_date - critical.created_date
-                sla_time = 15 * 24
-                time_to_resolve = time_delta / 3600
+                sla_time = 4
+                time_to_resolve = time_delta.total_seconds() / 3600
                 if time_to_resolve <= sla_time:
                     sla['critical']['in_sla'] += 1
                 else:
@@ -135,4 +136,5 @@ class SLAPerSeverityViewSet(ListAPIView):
 
             return Response(data=sla, status=status.HTTP_200_OK)         
         except Exception as e:
-            Response(data={'message': "Something went wrong!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response(data={'message': f"Something went wrong!{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
