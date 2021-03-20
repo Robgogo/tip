@@ -1,20 +1,24 @@
 from os import name
 from django.contrib import admin
 from django.urls import path, include, re_path
-
+from rest_auth.views import LogoutView
 from rest_auth.registration.views import VerifyEmailView, RegisterView
 
 from api.views.kpis import AvailabiltyPerServiceViewSet, NumberOFIncidentsRaisedViewSet, SLAPerSeverityViewSet
 from api.views.incidents import DepartmentViewSet, RaisedIncidentViewSet, ClosedIncidentViewSet, BacklogIncidentViewSet, CriticalIncidentViewSet, CriticalServiceViewSet, \
     DepartmentDetailViewSet, RaisedIncidentDetailViewSet, ClosedIncidentDetailViewSet, BacklogIncidentDetailViewSet, CriticalIncidentDetailViewSet, CriticalServiceDetailViewSet
 from api.views.file_handler import DepartmentTableViewSet, IncidentTablesViewSet, CriticalIncidentTableViewSet, ServiceTableViewSet
+from api.views.user import UserViewSet, GetLoggedInUserViewSet
 
 urlpatterns = [
     # Admin paths
     path('admin/', include('rest_auth.urls')),
     path('admin/registration/', include('rest_auth.registration.urls')),
+    re_path(r'^admin/logout/(?P<pk>[0-9a-f-]+)/$', LogoutView.as_view(), name='logout'),
     re_path(r'^admin/account-confirm-email/', VerifyEmailView.as_view(), name='account_email_verification_sent'),
     re_path(r'^admin/account-confirm-email/(?P<key>[-:\w]+)/$', VerifyEmailView.as_view(), name='account_confirm_email'),
+    path('admin/user/myinfo/', GetLoggedInUserViewSet.as_view(), name='current-user'),
+    re_path(r'^admin/users/(?P<pk>[0-9a-f-]+)/$', UserViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update'}), name='user-detail'),
 
     path('admin/raised_incident/', RaisedIncidentViewSet.as_view(), name='raised'),
     path('admin/closed_incident/', ClosedIncidentViewSet.as_view(), name='closed'),

@@ -9,30 +9,52 @@ from api.models.incidents import Department, CriticalService, \
     ClosedIncident, RaisedIncident, CriticalIncident, BacklogIncident
 from api.serializers.incidents import DepartmentSerializer, CriticalServiceSerializer, \
     RaisedIncidentSerializer, ClosedIncidentSerializer, BacklogIncidentSerializer, CriticalIncidentSerializer
+from api.serializers.user import UserSerializer
 
 
 class NumberOFIncidentsRaisedViewSet(ListAPIView):
-    # permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
-        # if request.user.role == 3:
-        #     return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.role == 3:
+            return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             year = kwargs['year']
             month = kwargs['month']
             raised_incidents = RaisedIncident.objects.all()
             backlog_incidents = BacklogIncidentSerializer(BacklogIncident.objects.all(), context={"request": request}, many=True)
+            # Previous month data
+            low_severity_pre = None
+            medium_severity_pre = None
+            high_severity_pre = None
+            critical_severity_pre = None
+            if int(month) > 1:
+                low_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Baja", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
+                medium_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Media", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
+                high_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Alta", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
+                critical_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
+
             low_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Baja", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             medium_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Media", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             high_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Alta", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             critical_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
+            low_sev_diff = (len(low_severity.data) - len(low_severity_pre.data)) / len(low_severity_pre.data) if low_severity_pre else 1
+            low_sev_diff = low_sev_diff * 100
+            medium_sev_diff = (len(medium_severity.data) - len(medium_severity_pre.data)) / len(medium_severity_pre.data) if medium_severity_pre else 1
+            medium_sev_diff = medium_sev_diff * 100
+            high_sev_diff = (len(high_severity.data) - len(high_severity_pre.data)) / len(high_severity_pre.data) if high_severity_pre else 1
+            high_sev_diff = high_sev_diff * 100
+            critical_sev_diff = (len(critical_severity.data) - len(critical_severity_pre.data)) / len(critical_severity_pre.data) if critical_severity_pre else 1
+            critical_sev_diff = critical_sev_diff * 100
+
             resp = {
-                "critical": len(critical_severity.data),
-                "backlog": len(backlog_incidents.data),
-                "medium": len(medium_severity.data),
-                "high": len(high_severity.data),
-                "low": len(low_severity.data),
-                "incidents": RaisedIncidentSerializer(raised_incidents, context={"request": request}, many=True).data
+                "critical": {"incident": len(critical_severity.data), "difference": critical_sev_diff},
+                "backlog": {"incident": len(backlog_incidents.data), "difference": 0},
+                "medium": {"incident": len(medium_severity.data), "difference": medium_sev_diff},
+                "high": {"incident": len(high_severity.data), "difference": high_sev_diff},
+                "low": {"incident": len(low_severity.data), "difference": low_sev_diff},
+                "incidents": RaisedIncidentSerializer(raised_incidents, context={"request": request}, many=True).data,
+                "user": UserSerializer(request.user, context={'request':request}).data
             }
             return Response(data=resp, status=status.HTTP_200_OK)
         except Exception as e:
@@ -41,11 +63,11 @@ class NumberOFIncidentsRaisedViewSet(ListAPIView):
         
 
 class AvailabiltyPerServiceViewSet(ListAPIView):
-    # permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
-        # if request.user.role == 3:
-        #     return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.role == 3:
+            return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             availability = {}
             year = kwargs['year']
@@ -55,23 +77,25 @@ class AvailabiltyPerServiceViewSet(ListAPIView):
                 availability[service.service] = {"total_unavailable_time": 0, "availability": 0}
             
             critical_incidents = CriticalIncident.objects.filter(created_date__year=year, created_date__month=month)
+            # print(critical_incidents)
             for incident in critical_incidents:
-                service = incident.application.service
-                time_delta = incident.resolution_date - incident.created_date
-                availability[service]['total_unavailable_time'] += time_delta.total_seconds()
+                if incident.application:
+                    service = incident.application.service
+                    time_delta = incident.resolution_date - incident.created_date
+                    availability[service]['total_unavailable_time'] += time_delta.total_seconds()
             for serv in availability:
                 availability[serv]["availability"] = (1 - (availability[serv]["total_unavailable_time"] / (30 * 24 * 3600))) * 100
             return Response(data=availability, status=status.HTTP_200_OK)
         except Exception as e:
-            Response(data={'message': "Something went wrong!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(data={'message': f"Something went wrong! {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class SLAPerSeverityViewSet(ListAPIView):
-    # permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
-        # if request.user.role == 3:
-        #     return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.role == 3:
+            return Response(data={'message': "You need Admin or Manager ROLE to access this resource!"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             sla = {
                 "low": {

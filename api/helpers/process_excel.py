@@ -14,20 +14,21 @@ def critical_incidents_excel_handler(filename):
         data = pd.read_excel(filename, engine='odf')
         incident_df = data[['Incident ID', 'Date raised', 'Date closed', 'Priority', 'Status', 'CI Name']]
         bulk_creator = []
+        incident_df = incident_df.drop_duplicates(subset=['Incident ID'], keep='last')
         for idx, row in incident_df.iterrows():
             application = CriticalService.objects.filter(application=row['CI Name']).first()
             created = pd.to_datetime(row['Date raised'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
             resolved = pd.to_datetime(row['Date closed'], format='%d/%m/%Y %H:%M').tz_localize('UTC')
+            
             new_inc = CriticalIncident(incident_id=row['Incident ID'], created_date=created,
                                        resolution_date=resolved, priority=row['Priority'], incident_status=row['Status'],
                                        application=application)
             bulk_creator.append(new_inc)
         bucket_name = settings.GS_BUCKET_NAME
-        new_filename = f"critical_incidents-{datetime.now()}"
+        new_filename = f"critical_incidents-{datetime.now()}.csv"
+        incident_df.to_csv(new_filename, index=False)
         upload_blob(bucket_name, new_filename, new_filename)
         CriticalIncident.objects.bulk_create(bulk_creator)
-        new_filename = f"critical_incidents-{datetime.now()}"
-        incident_df.to_csv(f'{new_filename}.csv', index=False)
         os.remove(new_filename)
         return "Success"
     except Exception as e:
@@ -188,7 +189,6 @@ def application_service_excel_handler(filename):
 
 def department_excel_handler(filename):
     try:
-        print(filename)
         data = pd.read_excel(filename)
         data = data.drop('Unnamed: 3', axis=1)
         dep_bulk_creator = []

@@ -7,6 +7,7 @@ class UserManager(BaseUserManager):
     def _create_user(self, email, password, role=None, **kwargs):
         email = self.normalize_email(email)
         is_staff = kwargs.pop('is_staff', True)
+        print("ARgs>>>", kwargs)
         if not role:
             role = kwargs.pop('role', 3)
         is_superuser = kwargs.pop('is_superuser', False)

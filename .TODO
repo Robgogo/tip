@@ -3,5 +3,14 @@ Implement code to add the other tables first time only. - Done
 Implement api to handle the file as upload and handle the excel files. - Done
 Register views in urls.py. - Done
 Register models in admin.py. - Done
+Test API. - Done
 Implement Celery.
-Test API.
+
+Add on KPI:
+    Increase/Decrease from last month(num_incidents) - Done
+    // Average of last year(availability)(frontend)
+    Average of this year(availability)(frontend)
+Remove Incidents not in Backlog on the next month.
+Implement and Test User add and login from the UI
+
+Work on UI

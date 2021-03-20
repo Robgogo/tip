@@ -36,6 +36,7 @@ class CreateUserSerializer(serializers.HyperlinkedModelSerializer):
 class RestAuthRegisterSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
+    role = serializers.IntegerField()
 
     def validate(self, data):
         return data
@@ -55,5 +56,6 @@ class RestAuthRegisterSerializer(RegisterSerializer):
         user.first_name = self.validated_data.get('first_name')
         user.last_name = self.validated_data.get('last_name')
         user.is_active = True
+        user.role = self.validated_data.get('role')
         user.save()
         return user
