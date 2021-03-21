@@ -52,9 +52,10 @@ def sort_by_cc(data):
 
 def raised_incidents_excel_handler(filename):
     try:
+        cut_len = 17 if filename.split('.')[0].split('-')[0].strip() == 'ENE' else 16
         excel_file = pd.ExcelFile(filename)
         data = pd.read_excel(excel_file, sheet_name='MONTHLY INCIDENTS RAISED')
-        data = clear_empty_rows(data, 17)
+        data = clear_empty_rows(data, cut_len)
         headers = data.iloc[0]
         data = data[1:]
         data.columns = headers
@@ -62,7 +63,10 @@ def raised_incidents_excel_handler(filename):
         data = data[sort_by_cc]
         data = data[['Incidenct Code', 'Create Date-Time', 'Resolution Date-Time', 'Incident Status', 'Priority', 'Inc. Type', 'Departamento Cliente']]
         bulk_creator = []
+        existing_incidents = RaisedIncident.objects.all().values_list('incident_id', flat=True)
         for idx, row in data.iterrows():
+            if row['Incidenct Code'] in existing_incidents:
+                continue
             code = None
             if not type(row['Departamento Cliente']) == float:
                 code = row['Departamento Cliente'].split('(')[1].split(')')[0]
@@ -100,7 +104,10 @@ def closed_incidents_excel_handler(filename):
         data = data[sort_by_cc]
         data = data[['Incidenct Code', 'Creation Date-Time', 'Resolution Date-Time', 'Incident Status', 'Priority', 'Inc. Type', 'Departamento Cliente']]
         bulk_creator = []
+        existing_incidents = ClosedIncident.objects.all().values_list('incident_id', flat=True)
         for idx, row in data.iterrows():
+            if row['Incidenct Code'] in existing_incidents:
+                continue
             code = None
             if not type(row['Departamento Cliente']) == float:
                 code = row['Departamento Cliente'].split('(')[1].split(')')[0]
@@ -129,9 +136,13 @@ def closed_incidents_excel_handler(filename):
 
 def backlog_incidents_excel_handler(filename):
     try:
+        month = filename.split('.')[0].split('-')[0].strip()
+        cut_len = 13 if month == 'ENE' else 12
+        months = ['ENE', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+        for_month = months.index(month) + 1
         excel_file = pd.ExcelFile(filename)
         data = pd.read_excel(excel_file, sheet_name='MONTHLY INCIDENTS BACKLOG')
-        data = clear_empty_rows(data, 13)
+        data = clear_empty_rows(data, cut_len)
         headers = data.iloc[0]
         data = data[1:]
         data.columns = headers
@@ -139,7 +150,9 @@ def backlog_incidents_excel_handler(filename):
         data = data[sort_by_cc]
         data = data[['Incidenct Code', 'Creation Date-Time', 'Resolution Date-Time', 'Incident Status', 'Priority', 'Inc. Type', 'Departamento Cliente']]
         bulk_creator = []
+        existing_incidents = BacklogIncident.objects.all().values_list('incident_id', flat=True)
         for idx, row in data.iterrows():
+            
             code = None
             if not type(row['Departamento Cliente']) == float:
                 code = row['Departamento Cliente'].split('(')[1].split(')')[0]
@@ -150,12 +163,11 @@ def backlog_incidents_excel_handler(filename):
                 created = None
             if pd.isna(resolved):
                 resolved = None
-            # TODO: check if the incident exist before adding it to db
-            new_backlog = BacklogIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'],
+            new_backlog = BacklogIncident(incident_id=row['Incidenct Code'], priority=row['Priority'], incident_type=row['Inc. Type'], for_month=for_month,
                                           incident_status=row['Incident Status'], created_date=created, resolution_date=resolved, department=department)
             bulk_creator.append(new_backlog)
         BacklogIncident.objects.bulk_create(bulk_creator)
-        month = filename.split('.')[0].split('-')[0].strip()
+        
         new_filename = f'monthly_incidents_backlog-{month}.csv'
         data.to_csv(new_filename, index=False)
         bucket_name = settings.GS_BUCKET_NAME

@@ -22,39 +22,44 @@ class NumberOFIncidentsRaisedViewSet(ListAPIView):
             year = kwargs['year']
             month = kwargs['month']
             raised_incidents = RaisedIncident.objects.all()
-            backlog_incidents = BacklogIncidentSerializer(BacklogIncident.objects.all(), context={"request": request}, many=True)
+            backlog_incidents = BacklogIncident.objects.all()
             # Previous month data
-            low_severity_pre = None
-            medium_severity_pre = None
-            high_severity_pre = None
-            critical_severity_pre = None
+            low_severity_pre = RaisedIncidentSerializer([], context={"request": request}, many=True)
+            medium_severity_pre = RaisedIncidentSerializer([], context={"request": request}, many=True)
+            high_severity_pre = RaisedIncidentSerializer([], context={"request": request}, many=True)
+            critical_severity_pre = RaisedIncidentSerializer([], context={"request": request}, many=True)
+            backlog_pre = BacklogIncidentSerializer([], context={"request": request}, many=True)
             if int(month) > 1:
-                low_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Baja", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
-                medium_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Media", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
-                high_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Alta", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
-                critical_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=int(month)-1), context={"request": request}, many=True)
+                low_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Baja", created_date__year=year, created_date__month=int(month) - 1), context={"request": request}, many=True)
+                medium_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Media", created_date__year=year, created_date__month=int(month) - 1), context={"request": request}, many=True)
+                high_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Alta", created_date__year=year, created_date__month=int(month) - 1), context={"request": request}, many=True)
+                critical_severity_pre = RaisedIncidentSerializer(raised_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=int(month) - 1), context={"request": request}, many=True)
+                backlog_pre = BacklogIncidentSerializer(backlog_incidents.filter(for_month=int(month) - 1), context={"request": request}, many=True)
 
+            backlog = BacklogIncidentSerializer(backlog_incidents.filter(for_month=int(month)), context={"request": request}, many=True)
             low_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Baja", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             medium_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Media", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             high_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Alta", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
             critical_severity = RaisedIncidentSerializer(raised_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=month), context={"request": request}, many=True)
-            low_sev_diff = (len(low_severity.data) - len(low_severity_pre.data)) / len(low_severity_pre.data) if low_severity_pre else 1
+            low_sev_diff = (len(low_severity.data) - len(low_severity_pre.data)) / len(low_severity_pre.data) if (low_severity_pre and len(low_severity_pre.data) > 0) else 1
             low_sev_diff = low_sev_diff * 100
-            medium_sev_diff = (len(medium_severity.data) - len(medium_severity_pre.data)) / len(medium_severity_pre.data) if medium_severity_pre else 1
+            medium_sev_diff = (len(medium_severity.data) - len(medium_severity_pre.data)) / len(medium_severity_pre.data) if (medium_severity_pre and len(medium_severity_pre.data) > 0) else 1
             medium_sev_diff = medium_sev_diff * 100
-            high_sev_diff = (len(high_severity.data) - len(high_severity_pre.data)) / len(high_severity_pre.data) if high_severity_pre else 1
+            high_sev_diff = (len(high_severity.data) - len(high_severity_pre.data)) / len(high_severity_pre.data) if (high_severity_pre and len(high_severity_pre.data) > 0) else 1
             high_sev_diff = high_sev_diff * 100
-            critical_sev_diff = (len(critical_severity.data) - len(critical_severity_pre.data)) / len(critical_severity_pre.data) if critical_severity_pre else 1
+            critical_sev_diff = (len(critical_severity.data) - len(critical_severity_pre.data)) / len(critical_severity_pre.data) if (critical_severity_pre and len(critical_severity_pre.data) > 0) else 1
             critical_sev_diff = critical_sev_diff * 100
+            backlog_diff = (len(backlog.data) - len(backlog_pre.data)) / len(backlog_pre.data) if (backlog and len(backlog_pre.data) > 0) else 1
+            backlog_diff = backlog_diff * 100
 
             resp = {
                 "critical": {"incident": len(critical_severity.data), "difference": critical_sev_diff},
-                "backlog": {"incident": len(backlog_incidents.data), "difference": 0},
+                "backlog": {"incident": len(backlog.data), "difference": backlog_diff},
                 "medium": {"incident": len(medium_severity.data), "difference": medium_sev_diff},
                 "high": {"incident": len(high_severity.data), "difference": high_sev_diff},
                 "low": {"incident": len(low_severity.data), "difference": low_sev_diff},
                 "incidents": RaisedIncidentSerializer(raised_incidents, context={"request": request}, many=True).data,
-                "user": UserSerializer(request.user, context={'request':request}).data
+                "user": UserSerializer(request.user, context={'request': request}).data
             }
             return Response(data=resp, status=status.HTTP_200_OK)
         except Exception as e:
@@ -118,10 +123,10 @@ class SLAPerSeverityViewSet(ListAPIView):
             year = kwargs['year']
             month = kwargs['month']
             closed_incidents = ClosedIncident.objects.all()
-            low_severity = closed_incidents.filter(priority="Baja", created_date__year=year, created_date__month=month)
-            medium_severity = closed_incidents.filter(priority="Media", created_date__year=year, created_date__month=month)
-            high_severity = closed_incidents.filter(priority="Alta", created_date__year=year, created_date__month=month)
-            critical_severity = closed_incidents.filter(priority="Crítica", created_date__year=year, created_date__month=month)
+            low_severity = closed_incidents.filter(priority="Baja", resolution_date__year=year, resolution_date__month=month)
+            medium_severity = closed_incidents.filter(priority="Media", resolution_date__year=year, resolution_date__month=month)
+            high_severity = closed_incidents.filter(priority="Alta", resolution_date__year=year, resolution_date__month=month)
+            critical_severity = closed_incidents.filter(priority="Crítica", resolution_date__year=year, resolution_date__month=month)
             for low in low_severity:
                 time_delta = low.resolution_date - low.created_date
                 sla_time = 15 * 24

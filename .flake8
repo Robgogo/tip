@@ -6,4 +6,4 @@ exclude =
     .ebextensions,
     python36
 max-complexity = 10
-max-line-length=200
+max-line-length=215

@@ -18,6 +18,9 @@ ADD ./config/ /app/config/
 ADD ./scripts/ /app/scripts/
 ADD ./api/ /app/api/
 ADD ./tip-robgogo.json /app/
+ADD ./fixtures/ /app/fixtures/
+ADD ./fixtures/department.json /app/fixtures/department.json
+ADD ./fixtures/services.json /app/fixtures/services.json
 RUN chmod +x /app/scripts/runserver.sh
 
 EXPOSE 8000

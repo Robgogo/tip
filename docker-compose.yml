@@ -27,6 +27,7 @@ services:
       - ./config/:/app/config/
       - ./api/:/app/api/
       - ./scripts/:/app/scripts/
+      - ./fixtures/:/app/fixtures/
     ports:
       - "8005:8000"
     depends_on:

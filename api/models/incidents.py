@@ -66,8 +66,8 @@ class RaisedIncident(models.Model):
         ('OPEN', 'OPEN'),
     )
 
-    id = models.UUIDField(default=uuid.uuid4, editable=False)
-    incident_id = models.CharField(max_length=50, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    incident_id = models.CharField(max_length=50)
     priority = models.CharField(max_length=50)
     incident_type = models.CharField(max_length=250)
     incident_status = models.CharField(max_length=50, choices=STATUS)
@@ -90,8 +90,8 @@ class ClosedIncident(models.Model):
         ('OPEN', 'OPEN'),
     )
 
-    id = models.UUIDField(default=uuid.uuid4, editable=False)
-    incident_id = models.CharField(max_length=50, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    incident_id = models.CharField(max_length=50)
     priority = models.CharField(max_length=50)
     incident_type = models.CharField(max_length=250)
     incident_status = models.CharField(max_length=50, choices=STATUS)
@@ -114,14 +114,15 @@ class BacklogIncident(models.Model):
         ('OPEN', 'OPEN'),
     )
 
-    id = models.UUIDField(default=uuid.uuid4, editable=False)
-    incident_id = models.CharField(max_length=50, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    incident_id = models.CharField(max_length=50)
     priority = models.CharField(max_length=50)
     incident_type = models.CharField(max_length=250)
     incident_status = models.CharField(max_length=50, choices=STATUS)
     created_date = models.DateTimeField(null=True, blank=True)
     resolution_date = models.DateTimeField(null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=CASCADE, null=True, blank=True)
+    for_month = models.SmallIntegerField(default=1)
 
     def __repr__(self):
         return self.incident_id
@@ -138,8 +139,8 @@ class CriticalIncident(models.Model):
         ('OPEN', 'OPEN'),
     )
 
-    id = models.UUIDField(default=uuid.uuid4, editable=False)
-    incident_id = models.CharField(max_length=50, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    incident_id = models.CharField(max_length=50)
     priority = models.CharField(max_length=50)
     incident_status = models.CharField(max_length=50, choices=STATUS)
     created_date = models.DateTimeField()

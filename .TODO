@@ -8,9 +8,7 @@ Implement Celery.
 
 Add on KPI:
     Increase/Decrease from last month(num_incidents) - Done
-    // Average of last year(availability)(frontend)
-    Average of this year(availability)(frontend)
-Remove Incidents not in Backlog on the next month.
-Implement and Test User add and login from the UI
+Remove Incidents not in Backlog on the next month. - Done
+Implement and Test User add and login from the UI - Done
 
 Work on UI
