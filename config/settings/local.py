@@ -31,6 +31,8 @@ INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
+STATIC_ROOT = os.path.join(BASE_DIR.parent, 'tip-ui2', 'build')
+
 ALLOWED_HOSTS = ['*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

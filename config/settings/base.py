@@ -94,7 +94,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR.parent, 'tip-ui2')],
+        'DIRS': [
+            os.path.join(BASE_DIR.parent, 'tip-ui2'), 
+            os.path.join(BASE_DIR.parent, '')
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

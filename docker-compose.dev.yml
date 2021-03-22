@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: robgogo
+      POSTGRES_PASSWORD: 1142
+      POSTGRES_DB: my_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata_v:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+  web:
+    build: .
+    command: /app/scripts/runserver.sh
+    environment:
+      ENV: local
+      WERKZEUG_DEBUG_PIN: 'off'
+
+      DB_USER: robgogo
+      DB_PASSWORD: 1142
+      DB_NAME: my_db
+      DB_PORT: 5432
+    volumes:
+      - ./config/:/app/config/
+      - ./api/:/app/api/
+      - ./core/:/app/core/
+      - ./scripts/:/app/scripts/
+      - ./fixtures/:/app/fixtures/
+      - ./tip-ui2/:/app/tip-ui2/
+
+    ports:
+      - "8005:8000"
+    depends_on:
+      - db
+    links:
+      - db:db
+
+volumes: 
+  pgdata_v:
+    external: true

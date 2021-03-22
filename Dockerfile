@@ -24,6 +24,8 @@ ADD ./fixtures/ /app/fixtures/
 ADD ./fixtures/department.json /app/fixtures/department.json
 ADD ./fixtures/services.json /app/fixtures/services.json
 RUN chmod +x /app/scripts/runserver.sh
+RUN chmod +x /app/scripts/server.sh
+
 
 EXPOSE 8000
-CMD ["/app/scripts/runserver.sh"]
+CMD ["/app/scripts/server.sh"]
