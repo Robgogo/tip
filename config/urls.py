@@ -14,10 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from core.views import index, bad_request
+from django.conf.urls import handler404
+
+handler404 = bad_request
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('api-auth/', include('rest_framework.urls')),
+    path("", index, name='index'),
+    re_path(r'([0-9a-f-]*)', bad_request),
 ]

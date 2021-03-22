@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils.translation import ugettext_lazy as _
 from rest_auth.registration.serializers import RegisterSerializer
 from api.models.user import User
 
@@ -23,6 +24,16 @@ class CreateUserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+    
+    def validate(self, attrs):
+        email = attrs['email']
+        allowed_domain = 'faculty.ie.edu'
+        email_domain = email.split('@')[1]
+        if email_domain != allowed_domain:
+            msg = 'The email domain should be "@faculty.ie.edu" only!'
+            raise serializers.ValidationError(msg)
+        
+        return attrs
 
     class Meta:
         model = User
@@ -37,6 +48,14 @@ class RestAuthRegisterSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     role = serializers.IntegerField()
+
+    def validate_email(self, email):
+        allowed_domain = 'faculty.ie.edu'
+        email_domain = email.split('@')[1]
+        if email_domain != allowed_domain:
+            msg = _('The email domain should be "@faculty.ie.edu" only!')
+            raise serializers.ValidationError(msg)
+        return email
 
     def validate(self, data):
         return data

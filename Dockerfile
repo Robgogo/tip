@@ -17,6 +17,8 @@ ADD ./manage.py /app/
 ADD ./config/ /app/config/
 ADD ./scripts/ /app/scripts/
 ADD ./api/ /app/api/
+ADD ./core/ /app/core/
+ADD ./tip-ui2/ /app/tip-ui2/
 ADD ./tip-robgogo.json /app/
 ADD ./fixtures/ /app/fixtures/
 ADD ./fixtures/department.json /app/fixtures/department.json

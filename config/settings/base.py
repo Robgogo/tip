@@ -41,6 +41,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # API
     'api.apps.ApiConfig',
+    # CORE
+    'core.apps.CoreConfig',
     
     # Django apps
     'django.contrib.admin',
@@ -83,7 +85,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
     ]
 }
 
@@ -92,7 +94,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR.parent, 'tip-ui2')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,6 +146,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR.parent, 'tip-ui2', 'build', 'static'),
+)
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = False
@@ -198,7 +203,7 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 # DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = 'tip-robgogo'
 SERVICE_ACCOUNT = os.path.join(BASE_DIR.parent, 'tip-robgogo.json')
-print(SERVICE_ACCOUNT)
+print(BASE_DIR)
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 

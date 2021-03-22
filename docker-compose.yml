@@ -26,8 +26,11 @@ services:
     volumes:
       - ./config/:/app/config/
       - ./api/:/app/api/
+      - ./core/:/app/core/
       - ./scripts/:/app/scripts/
       - ./fixtures/:/app/fixtures/
+      - ./tip-ui2/:/app/tip-ui2/
+
     ports:
       - "8005:8000"
     depends_on:
