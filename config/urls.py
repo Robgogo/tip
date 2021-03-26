@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from core.views import index, bad_request
+from django.conf.urls.static import static
+from django.conf import settings
 from django.conf.urls import handler404
 
 handler404 = bad_request
@@ -25,5 +27,5 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path("", index, name='index'),
-    re_path(r'([0-9a-f-]*)', bad_request),
-]
+    # ,
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + [re_path(r'([0-9a-f-]*)', bad_request)]

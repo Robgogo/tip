@@ -8,7 +8,7 @@ cd $ROOT_PATH
 #create database if it is not there yet
 python -c "from psycopg2 import connect; connect(dbname='postgres', user='$DB_USER', host='db', password='$DB_PASSWORD').cursor().execute('create database $DB_NAME;')"
 
-python manage.py collectstatic --noinput
+# python manage.py collectstatic --noinput
 
 #install DB and fixtures
 python manage.py makemigrations

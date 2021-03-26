@@ -12,3 +12,6 @@ Remove Incidents not in Backlog on the next month. - Done
 Implement and Test User add and login from the UI - Done
 
 Work on UI
+
+
+docker tag 9cb8563ac880 gcr.io/${PROJECT_ID}/${PROJECT_ID}:latest

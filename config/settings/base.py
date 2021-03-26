@@ -15,6 +15,10 @@ import os
 from corsheaders.defaults import default_headers
 from dotenv import load_dotenv, find_dotenv
 
+import mimetypes
+mimetypes.add_type("text/css", ".css", True)
+mimetypes.add_type("text/javascript", ".js", True)
+
 
 load_dotenv(find_dotenv())
 
@@ -95,8 +99,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR.parent, 'tip-ui2'), 
-            os.path.join(BASE_DIR.parent, '')
+            os.path.join(BASE_DIR.parent, 'tip-ui2'),
             ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -151,6 +154,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR.parent, 'tip-ui2', 'build', 'static'),
+    # os.path.join(BASE_DIR.parent, 'tip-ui2', 'build'),
+    # os.path.join(BASE_DIR.parent, 'tip-ui2')
+
 )
 
 CORS_ORIGIN_ALLOW_ALL = True

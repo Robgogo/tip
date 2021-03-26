@@ -10,7 +10,7 @@ if os.environ.get("ENV_PATH"):
     env_path = os.environ.get("ENV_PATH")
     load_dotenv(dotenv_path=env_path)
 
-DEBUG = False
+DEBUG = True
 # DOMAIN = 'http://localhost:8005'
 LOCAL = False
 SITE_ID = 2
@@ -38,7 +38,8 @@ FIXTURE_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR.parent, 'tip-ui2', 'build')
-# INSTALLED_APPS.append('debug_toolbar')
+# print("PRODUCTION")
+INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware',)
 

@@ -11,13 +11,13 @@ services:
       # DB_PASSWORD: 121l74lMEBFOcLm9
       # DB_NAME: my_db
       # DB_PORT: 5432
-    # volumes:
-    #   - ./config/:/app/config/
-    #   - ./api/:/app/api/
-    #   - ./core/:/app/core/
-    #   - ./scripts/:/app/scripts/
-    #   - ./fixtures/:/app/fixtures/
-    #   - ./tip-ui2/:/app/tip-ui2/
+    volumes:
+      - ./config/:/app/config/
+      - ./api/:/app/api/
+      - ./core/:/app/core/
+      - ./scripts/:/app/scripts/
+      - ./fixtures/:/app/fixtures/
+      - ./tip-ui2/:/app/tip-ui2/
 
     ports:
-      - "80:8000"
+      - "8080:8000"
